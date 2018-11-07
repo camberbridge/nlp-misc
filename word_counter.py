@@ -3,28 +3,37 @@
 import collections
 from misc import tools
 from misc.mecab_segmenter import word_segmenter_ja
-from gensim import corpora, models, similarities
 import sys
 
 
-def word_count(sentences):
+def word_count(sentences, aggregate_flag, is_doc_or_docs):
     words_list = []
-    sent_tf_list = {}
+    sent_tf_list = []
 
     # sentences to TF
-    for sent in sentences:
+    for sent in sentences: 
         words = word_segmenter_ja(sent)
-        words_list.extend(words)
 
-    sent_tf_list = collections.Counter(words_list)
+        # For a doc.
+        if aggregate_flag: 
+            words_list.extend(words)
+        # For docs.
+        else:
+            words_list.append(words)
+            if len(words) == 1:
+                print("HHHHHHHHHH", words)
+            sent_tf_list.append(collections.Counter(words))
 
-    return sent_tf_list
+    if aggregate_flag: 
+        sent_tf_list = collections.Counter(words_list)
+
+    return words_list, sent_tf_list
 
 
-def main(text):
+def main(text, aggregate_flag = True, is_doc_or_docs = True):
     # Separate documents by new line. 
     sentences = list(tools.sent_splitter_ja(text))
-    return word_count(sentences)
+    return word_count(sentences, aggregate_flag, is_doc_or_docs)
 
 
 if __name__ == "__main__":
