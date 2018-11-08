@@ -20,8 +20,6 @@ def word_count(sentences, aggregate_flag, is_doc_or_docs):
         # For docs.
         else:
             words_list.append(words)
-            if len(words) == 1:
-                print("HHHHHHHHHH", words)
             sent_tf_list.append(collections.Counter(words))
 
     if aggregate_flag: 
