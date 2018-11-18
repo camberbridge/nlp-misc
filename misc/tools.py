@@ -1,6 +1,6 @@
 # coding: utf-8
 
-def sent_splitter_ja(text, delimiters=set(u'。、,．.？?！!\n\r'),
+def sent_splitter_ja(text, delimiters=set(u'。．？！\n\r'),
                      parenthesis=u'（）()「」[]{}『』“”<>＜＞'):
     """ specification
     - input: UTF-8 string
