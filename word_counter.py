@@ -6,7 +6,7 @@ from misc.mecab_segmenter import word_segmenter_ja
 import sys
 
 
-def word_count(sentences, aggregate_flag, is_doc_or_docs):
+def word_count(sentences, is_doc_or_docs):
     words_list = []
     sent_tf_list = []
 
@@ -15,23 +15,23 @@ def word_count(sentences, aggregate_flag, is_doc_or_docs):
         words = word_segmenter_ja(sent)
 
         # For a doc.
-        if aggregate_flag: 
+        if is_doc_or_docs: 
             words_list.extend(words)
         # For docs.
         else:
             words_list.append(words)
             sent_tf_list.append(collections.Counter(words))
 
-    if aggregate_flag: 
+    if is_doc_or_docs: 
         sent_tf_list = collections.Counter(words_list)
 
     return words_list, sent_tf_list
 
 
-def main(text, aggregate_flag = True, is_doc_or_docs = True):
+def main(text, is_doc_or_docs = True):
     # Separate documents by new line. 
     sentences = list(tools.sent_splitter_ja(text))
-    return word_count(sentences, aggregate_flag, is_doc_or_docs)
+    return word_count(sentences, is_doc_or_docs)
 
 
 if __name__ == "__main__":

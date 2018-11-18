@@ -23,11 +23,12 @@ def documents_wakati(text):
 
     with open(text, "r") as f:
         sentences = f.read()
-        splitted_document_WAKATIlist, _ = main(sentences, aggregate_flag = False, is_doc_or_docs = False)
+        splitted_document_WAKATIlist, _ = main(sentences, is_doc_or_docs = False)
         return splitted_document_WAKATIlist
 
 def lda(input_file = sys.argv[1]):
     separated_document_list = documents_wakati(input_file)
+    sys.exit()
 
     # Generate a corpora.
     dictionary = corpora.Dictionary(separated_document_list)
