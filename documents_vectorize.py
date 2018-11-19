@@ -28,11 +28,19 @@ def documents_wakati(text):
 
 def lda(input_file = sys.argv[1]):
     # List for remove stop words.
-    stothlib_stopwords = []
+    slothlib_stopwords = []
     with open("./slothlib.txt", "r") as f:
         slothlib_stopwords = [line.decode("utf-8").strip() for line in f]
 
     separated_document_list = documents_wakati(input_file)
+
+    # Remove stop words.
+    b_pivot = 0
+    for i in xrange(len(separated_document_list)):
+        if separated_document_list[b_pivot] in slothlib_stopwords:
+            separated_document_list.pop(b_pivot)
+            continue
+        b_pivot += 1
 
     # Generate a corpora.
     dictionary = corpora.Dictionary(separated_document_list)
