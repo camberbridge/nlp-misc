@@ -50,7 +50,7 @@ def lda(input_file = sys.argv[1]):
 
     # Generate a corpora.
     dictionary = corpora.Dictionary(separated_document_list)
-    dictionary.filter_extremes(no_below=5, no_above=0.5)  # (Provisional)
+    dictionary.filter_extremes(no_below=2, no_above=0.3)  # (Provisional)
     dictionary.save_as_text('dict.txt')
 
     # Generate a Dictionary.
