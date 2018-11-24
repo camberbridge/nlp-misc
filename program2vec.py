@@ -6,13 +6,13 @@ from documents_vectorize import documents_wakati
 
 
 def program2vec(separated_document_list):
-    # Create training data
-    train_data = [TaggedDocument(words = line, tags = [i]) for i, line in enumerate(separated_document_list)]
-
     # Learn a model
     if os.path.exists("./doc2vec.model"):
         m = Doc2Vec.load("./doc2vec.model")
     else:
+        # Create training data
+        train_data = [TaggedDocument(words = line, tags = [i]) for i, line in enumerate(separated_document_list)]
+
         # vector_size: A dimension num of a compression vector
         m = Doc2Vec(documents = train_data, dm = 1, vector_size=300, window=8, min_count=10, workers=4)
         m.save("./doc2vec.model")
