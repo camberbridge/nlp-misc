@@ -2,7 +2,8 @@
 
 from gensim import corpora, models, similarities
 from word_counter import main
-import gensim, collections, sys
+import gensim, collections, sys, json
+import numpy as np
 
 def document_wakati(text):
     """
@@ -60,26 +61,35 @@ def lda(input_file = sys.argv[1]):
     corpus = corpora.MmCorpus('cop.mm')
 
     # Create a model by Hierarchical Dirichlet Process.
-    model = gensim.models.hdpmodel.HdpModel(corpus=corpus, id2word=dictionary)
+    #model = gensim.models.hdpmodel.HdpModel(corpus=corpus, id2word=dictionary)
 
     # Create a model by Latent Dirichlet Allocation.
-    #topic_N = 20
-    #model = gensim.models.ldamodel.LdaModel(corpus=corpus, num_topics=topic_N, id2word=dictionary)
+    topic_N = 20
+    model = gensim.models.ldamodel.LdaModel(corpus=corpus, num_topics=topic_N, id2word=dictionary)
 
     # Topics(Max. 150), and words that construct a topic.
-    print(model.print_topics(num_topics=-1, num_words=10))
+    topics_list = model.print_topics(num_topics=-1, num_words=10)
 
     # Count topics that estimated above script.
     estimated_topicnum_list = []
     topics = [model[c] for c in corpus]
+    json_data = {}
 
-    for i in xrange(len(topics)):
-        if len(topics[i]) == 0:
-            continue
-        else:
-            print(i, u"番目の文書のトピックは, ", topics[i])  # [(topic_index, topic_weight), ...]
-            for topic_and_prob_tuple in topics[i]:
-                estimated_topicnum_list.append(topic_and_prob_tuple[0])
+    with open("lda20_2_30per.json", "w") as f:
+        for i in xrange(len(topics)):
+            if len(topics[i]) == 0:
+                continue
+            else:
+                print(i, u"番目の文書のトピックは, ", topics[i])  # [(topic_index, topic_weight), ...]
+                for topic_and_prob_tuple in topics[i]:
+                    estimated_topicnum_list.append(topic_and_prob_tuple[0])
+
+                index = [j[0] for j in topics[i]]
+                c = [j[1] for j in topics[i]]
+                print(i, topics_list[index[np.argmax(c)]][1])
+                json_data[i] = topics_list[index[np.argmax(c)]][1]
+
+        json.dump(json_data, f, indent=4, sort_keys=True, separators=(',', ': '))
 
     estimated_topicnum_dict = collections.Counter(estimated_topicnum_list)
     print(u"推定されたトピックの数: ", len(estimated_topicnum_dict))
