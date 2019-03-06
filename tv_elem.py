@@ -18,6 +18,8 @@ class pycolor:
     REVERCE = '\033[07m'
 
 if __name__ == "__main__":
+    program_id = sys.argv[1]
+
     with open("texts/tv_program.json", "r") as f:
         tv_program = json.load(f)
 
@@ -29,10 +31,18 @@ if __name__ == "__main__":
             result_list.append(tv_program[l.split()[8].replace(".txt", "")] + [l.split()[8]])
             counter += 1
 
-    with open("./models/hdplda_5_50per.json", "r") as f:
+    # 上位概念≒概略
+    with open("./models/lda20_2_30per.json", "r") as f:
         tv_elem = json.load(f)
         print("\n")
-        print(result_list[int(sys.argv[1])][3:])
+        print(result_list[int(program_id)][3:])
         print(pycolor.RED + "=== includes =>>>" + pycolor.END)
-        print(tv_elem[sys.argv[1]].encode("utf-8"))
+        print("構成概略")
+        print(tv_elem[program_id])
+        
+    # 下位概念≒詳細
+    with open("./models/hdplda_2_30per.json", "r") as f:
+        tv_elem = json.load(f)
+        print("構成詳細")
+        print(tv_elem[program_id])
         print("\n")
