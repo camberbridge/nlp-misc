@@ -8,13 +8,13 @@ def program2vec():
 
     return m
 
-def similarities_inference(m, doc_id):
+def similarities_inference(m, doc_id, _topn):
     """
     - input: A document used for learning.
     - Get most a similar doc between parameter(doc ID = tags num) and all docs.
-    - return: 10 similarity docs(e.g. [(3, 0.999999), (5, 0.98223333), ...]
+    - return: _topn(default: 10) similarity docs(e.g. [(3, 0.999999), (5, 0.98223333), ...]
     """
-    return m.docvecs.most_similar(doc_id)
+    return m.docvecs.most_similar(doc_id, topn=_topn)
 
 def any_similarities_inference(m, doc_id1, doc_id2):
     """
@@ -55,6 +55,8 @@ if __name__ == "__main__":
             result_list.append(tv_program[l.split()[8].replace(".txt", "")] + [l.split()[8]])
             counter += 1
 
+    topn = 10
+
     if types == 0:
         """
         - Most sim infer.
@@ -63,9 +65,24 @@ if __name__ == "__main__":
         param = int(sys.argv[2])
         print("\n")
         print("A most sim to ", result_list[param][3:], " are ")
-        for c in similarities_inference(model, [param]):
+        for c in similarities_inference(model, [param], topn):
             print(c[1], result_list[c[0]][3:])
         print("\n") 
+
+        print("==============")
+
+        """
+        - Most dissim infer.
+        - arg: e.g. 0
+        """
+        print("\n") 
+        print("A most dissim to ", result_list[param][3:], " are ")
+        dissim_list = similarities_inference(model, [param], _topn=len(result_list))
+        dissim_list.reverse()
+        for c in dissim_list[:topn]:
+            print(c[1], result_list[c[0]][3:])
+        print("\n")
+        
     elif types == 1:
         """ 
         - Most sim between doc1 and doc2.
