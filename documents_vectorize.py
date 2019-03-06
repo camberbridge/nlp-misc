@@ -68,7 +68,7 @@ def lda(input_file = sys.argv[1]):
     model = gensim.models.ldamodel.LdaModel(corpus=corpus, num_topics=topic_N, id2word=dictionary)
 
     # Topics(Max. 150), and words that construct a topic.
-    topics_list = model.print_topics(num_topics=-1, num_words=10)
+    topics_list = model.print_topics(num_topics=-1, num_words=999999)
 
     # Count topics that estimated above script.
     estimated_topicnum_list = []
@@ -86,8 +86,23 @@ def lda(input_file = sys.argv[1]):
 
                 index = [j[0] for j in topics[i]]
                 c = [j[1] for j in topics[i]]
-                print(i, topics_list[index[np.argmax(c)]][1])
-                json_data[i] = topics_list[index[np.argmax(c)]][1]
+
+                top_n_word = []
+                # Words (=N) related to topic.
+                top_n = 10
+                counter = 0
+                words_list = topics_list[index[np.argmax(c)]][1].split("+")
+                for w in words_list:
+                    # 0.000*"hoge" -> hoge
+                    w = w.replace("*", "").replace(" ", "").replace('"', '')[5:]
+                    if w in separated_document_list[i]:
+                        if counter == top_n:
+                            break
+                        top_n_word.append(w)
+                        counter += 1
+
+                print(i, top_n_word)
+                json_data[i] = top_n_word
 
         json.dump(json_data, f, indent=4, sort_keys=True, separators=(',', ': '))
 
