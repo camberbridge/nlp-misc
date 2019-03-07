@@ -17,6 +17,14 @@ class pycolor:
     INVISIBLE = '\033[08m'
     REVERCE = '\033[07m'
 
+def formatting(l):
+    tv = l[3]
+    txt = l[6]
+    rating = l[5]
+    ch = l[4]
+    time = l[0] + "-" + l[1]
+    return tv, rating, time, ch, txt
+
 if __name__ == "__main__":
     program_id = sys.argv[1]
 
@@ -31,11 +39,13 @@ if __name__ == "__main__":
             result_list.append(tv_program[l.split()[8].replace(".txt", "")] + [l.split()[8]])
             counter += 1
 
+    result = formatting(result_list[int(program_id)])
+
     # 上位概念≒概略
     with open("./models/lda20_2_30per.json", "r") as f:
         tv_elem = json.load(f)
         print("\n")
-        print(result_list[int(program_id)][3:])
+        print(result)
         print(pycolor.RED + "=== includes =>>>" + pycolor.END)
         print("構成概略")
         print(tv_elem[program_id])
