@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="form">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="lead">
+                    {% if name %}
+                    こんにちは {{ name }} さん
+                    {% else %}
+                    {{ message }}
+                    {% endif %}
+                </p>
+                <form action="/post" method="post" class="form-inline">
+                    <label for="name">名前</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                    <button type="submit" class="btn btn-default">送信する</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--6-col">6</div>
+        <div class="mdl-cell mdl-cell--4-col">4</div>
+        <div class="mdl-cell mdl-cell--2-col">2</div>
+    </div>
+</div>
+
+<div id="holder">
+    PDFをここにドラッグ&ドロップ！！！！！！！！
+</div>
+
+<script>
+// Electronは標準でファイルのドラッグ&ドロップを採用している. そのためこの処理が必要
+// 参考: https://qiita.com/nyamogera/items/3b74afa3ccb65ae918d7
+document.ondragover = document.ondrop = function(e) {
+    e.preventDefault(); // イベントの伝搬を止めて、アプリケーションのHTMLとファイルが差し替わらないようにする
+    return false;
+};
+
+// 以下, ファイルのドラッグ&ドロップ処理
+var holder = document.getElementById('holder');
+/** hoverエリアにドラッグされた場合 */
+holder.ondragover = function () {
+    return false;
+};
+/** hoverエリアから外れた or ドラッグが終了した */
+holder.ondragleave = holder.ondragend = function () {
+    return false;
+};
+/** hoverエリアにドロップされた */
+holder.ondrop = function (e) {
+    e.preventDefault(); // イベントの伝搬を止めて、アプリケーションのHTMLとファイルが差し替わらないようにする
+
+    var file = e.dataTransfer.files[0];
+    //holder.innerText = file.name;  // ファイル名のみ
+    holder.innerText = file.path;  // ファイルの絶対パス
+    console.log(file.path);
+
+    execPost("/post", {"name": file.path});
+
+    /*
+    hoge("おしり");
+    */
+
+    return false;
+};
+
+/*
+var hoge=function(value){
+    alert(value);
+};
+*/
+
+// postメソッドをJSだけで: https://gist.github.com/zuzu/c68e105d966c4d235334
+var execPost=function(action, data) {
+ // フォームの生成
+ var form = document.createElement("form");
+ form.setAttribute("action", action);
+ form.setAttribute("method", "post");
+ form.style.display = "none";
+ document.body.appendChild(form);
+ // パラメタの設定
+ if (data !== undefined) {
+  for (var paramName in data) {
+   var input = document.createElement('input');
+   input.setAttribute('type', 'hidden');
+   input.setAttribute('name', paramName);
+   input.setAttribute('value', data[paramName]);
+   form.appendChild(input);
+  }
+ }
+ // submit
+ form.submit();
+};
+</script>
+
+{% endblock %}

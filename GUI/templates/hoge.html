@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Bootstrap 101 Template</title>
+    {% endif %}
+</head>
+<body>
+<div class="form">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="lead">
+                    {% if name %}
+                    こんにちは {{ name }} さん
+                    {% else %}
+                    {{ message }}
+                    {% endif %}
+                </p>
+                <form action="/post" method="post" class="form-inline">
+                    <label for="name">名前</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                    <button type="submit" class="btn btn-default">送信する</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

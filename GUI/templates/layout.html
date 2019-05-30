@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Bootstrap 101 Template</title>
+    {% endif %}
+    <!-- Material Design Lite -->
+    <link href="/static/css/material.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icon of MDL -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        /* navbarの設定 */
+        .demo-layout-waterfall .mdl-layout__header-row .mdl-navigation__link:last-of-type  {
+        padding-right: 0;
+        }
+
+        /* カードの設定 */
+        .demo-card-wide.mdl-card {
+        width: auto;
+        }
+        .demo-card-wide > .mdl-card__title {
+        color: #black;
+        height: auto;
+        /*height: 300px;*/
+        background-color: #fff;
+        }
+        .demo-card-wide > .mdl-card--color1 {
+        background-color: #ff1493;
+        color: #fff;
+        }
+        .demo-card-wide > .mdl-card--color2 {
+        background-color: #00ced1;
+        color: #fff;
+        }
+        .demo-card-wide > .mdl-card--color3 {
+        background-color: #ffa500;
+        color: #fff;
+        }
+
+        /* scrollbarの設定(参考: https://codepen.io/GhostRider/pen/GHaFw) */
+        .scrollbar
+        {
+        margin-left: 30px;
+        margin-right: -20px;
+        float: left;
+        height: 390px;
+        width: auto;
+        background: #F5F5F5;
+        overflow-y: scroll;
+        color: black;
+        }
+        .force-overflow
+        {
+        min-height: 450px;
+        }
+    </style>
+</head>
+<body>
+{% block content %}{% endblock %}
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/static/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/static/js/bootstrap.min.js"></script>
+<!-- Material Design Lite -->
+<script src="/static/js/material.min.js"></script>
+</body>
+</html>

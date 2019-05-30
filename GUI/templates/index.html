@@ -1,0 +1,281 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="demo-layout-waterfall mdl-layout mdl-js-layout">
+    <header class="mdl-layout__header mdl-layout__header--waterfall">
+        <!-- Top row, always visible -->
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">番組演算・分析エンジン ー Jagaimo ー </span>
+            <div class="mdl-layout-spacer"></div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
+                  mdl-textfield--floating-label mdl-textfield--align-right">
+            </div>
+        </div>
+    </header>
+    <main class="mdl-layout__content">
+        <div class="page-content container">
+            <div class="form">
+                <p class="lead">
+                    <!--{{message}}-->
+                </p>
+            </div>
+
+            <!-- datalist -->
+            <datalist id="tv-list">
+                {% for i in tv_list %}
+                    <option value={{i}}>
+                {% endfor %}
+            </datalist>
+
+            <form action="/" method="post">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:360px">
+                    {% if posi_tv %}
+                        <input class="mdl-textfield__input" type="text" id="sample3" list="tv-list" autocomplete="off" name="tv_add" value={{posi_tv[0]}}>
+                    {% else %}
+                        <input class="mdl-textfield__input" type="text" id="sample3" list="tv-list" autocomplete="off" name="tv_add">
+                    {% endif %}
+                    <label class="mdl-textfield__label" for="sample3">
+                        <i class="material-icons">add_circle_outline</i>番組1...
+                    </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:360px">
+                    {% if posi_tv %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-2" list="tv-list" autocomplete="off" name="tv_add" value={{posi_tv[1]}}>
+                    {% else %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-2" list="tv-list"
+ autocomplete="off" name="tv_add">
+                    {% endif %}
+                    <label class="mdl-textfield__label" for="sample3-2">
+                        <i class="material-icons">add_circle_outline</i>番組2...
+                    </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:360px">
+                    {% if posi_tv %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-3" list="tv-list" autocomplete="off" name="tv_add" value={{posi_tv[2]}}>
+                    {% else %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-3" list="tv-list" autocomplete="off" name="tv_add">
+                    {% endif %}
+                    <label class="mdl-textfield__label" for="sample3-3">
+                        <i class="material-icons">add_circle_outline</i>番組3...
+                    </label>
+                </div>
+
+                </br>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:360px">
+                    {% if nega_tv %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-4" list="tv-list" autocomplete="off" name="tv_remove" value={{nega_tv[0]}}>
+                    {% else %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-4" list="tv-list" autocomplete="off" name="tv_remove">
+                    {% endif %}
+                    <label class="mdl-textfield__label" for="sample3-4">
+                        <i class="material-icons">remove_circle_outline</i>番組1...
+                    </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:360px">
+                    {% if nega_tv %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-5" list="tv-list" autocomplete="off" name="tv_remove" value={{nega_tv[1]}}>
+                    {% else %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-5" list="tv-list" autocomplete="off" name="tv_remove">
+                    {% endif %}
+                    <label class="mdl-textfield__label" for="sample3-5">
+                        <i class="material-icons">remove_circle_outline</i>番組2...
+                    </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:360px">
+                    {% if nega_tv %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-6" list="tv-list" autocomplete="off" name="tv_remove" value={{nega_tv[2]}}>
+                    {% else %}
+                        <input class="mdl-textfield__input" type="text" id="sample3-6" list="tv-list" autocomplete="off" name="tv_remove">
+                    {% endif %}
+                    <label class="mdl-textfield__label" for="sample3-6">
+                        <i class="material-icons">remove_circle_outline</i>番組3...
+                    </label>
+                </div>
+
+                </br>
+
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type="submit">実行</button>
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" type="button" onclick="deleteButton()">クリア</button>
+
+                {% if similarity %}
+                    <span class="mdl-chip">
+                        <span class="mdl-chip__text">類似度：{{similarity}}</span>
+                    </span>
+                {% endif %}
+            </form>
+
+            <!-- Analysis -->
+            <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+              <div class="mdl-tabs__tab-bar">
+      		<a href="#starks-panel" class="mdl-tabs__tab is-active">演算結果（類似番組）</a>
+      		<a href="#lannisters-panel" class="mdl-tabs__tab is-active">構成要素（特徴単語）</a>
+  	      </div>
+
+              <!--
+              {% if message[0] %}
+                  {% for i in message[0] %}
+                      <i class="material-icons">add_circle_outline</i> <button class="mdl-button mdl-js-button mdl-button--accent">{{i}}</button>
+                  {% endfor %}
+              {% endif %}
+              {% if message[1] %}
+              </br>
+                  {% for i in message[1] %}
+                      <i class="material-icons">remove_circle_outline</i> <button class="mdl-button mdl-js-button mdl-button--primary">{{i}}</button>
+                  {% endfor %}
+              {% endif %}
+              -->
+
+ 	      <div class="mdl-tabs__panel is-active" id="starks-panel">
+                    {% if main_text %}
+                    <div class="scrollbar">
+                        <div class="force-overflow" style="max-width:400px;">
+
+                            {% if sim_list %}
+                            <!-- 類似番組 -->
+                            <ol>
+                                {% for i in range(sim_list|length) %}
+                                    <li><button class="mdl-button mdl-js-button mdl-button--accent" id="sim-{{i}}" onclick="deleteButton{{i}}()">
+                                        {{sim_list[i][1][:sim_list[i][1].index("_")]}}
+                                    </button></li>
+                                {% endfor %}
+                            </ol>
+                            {% endif %}
+
+                            {% if dis_list %}
+                            <hr>
+                            <!-- 非類似番組 -->
+                            <ol>
+                                {% for i in range(dis_list|length) %}
+                                    <li><button class="mdl-button mdl-js-button mdl-button--primary" id="dis-{{i}}" onclick="deleteButtonForDis{{i}}()">
+                                        {{dis_list[i][1][:dis_list[i][1].index("_")]}}
+                                    </button></li>
+                                {% endfor %}
+                            </ol>
+                            {% endif %}
+
+                            <!--
+                            {% if similarity %}
+                                <b>類似度</b>
+                                {{similarity}}</br>
+                            {% endif %}
+                            -->
+
+                            {% if add_result %}
+                            <!-- 足し算結果 -->
+                            <ol>
+                                {% for i in range(add_result|length) %}
+                                    <li><button class="mdl-button mdl-js-button mdl-button--accent" id="sim-{{i}}" onclick="deleteButton{{i}}()">
+                                        {{add_result[i][1][:add_result[i][1].index("_")]}}
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                            {% endif %}
+
+                            {% if add_sub_result %}
+                            <!-- 足し引き結果 -->
+                            <ol>
+                                {% for i in range(add_sub_result|length) %}
+                                    <li><button class="mdl-button mdl-js-button mdl-button--accent" id="sim-{{i}}" onclick="deleteButton{{i}}()">
+                                        {{add_sub_result[i][1][:add_sub_result[i][1].index("_")]}}
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    None...
+                    {% endif %}
+     	      </div>
+              <div class="mdl-tabs__panel is-active" id="lannisters-panel">
+                    {% if high_semantic %}
+                    <div class="scrollbar">
+                        <div class="force-overflow" style="max-width:700px;">
+                            {% for i in range(high_semantic|length) %}
+                                {{message_1dim[i]}} </br>
+                                <span>【大枠】</span>
+                                {% for j in high_semantic[i] %}
+                                    <span>{{j}}　</span>
+                                {% endfor %}
+                                </br>
+                                <span>【詳細】</span>
+                                {% for j in low_semantic[i] %}
+                                    <span>{{j}}　</span>
+                                {% endfor %}  
+                                </br>
+                                <hr>
+                            {% endfor %}
+                            <span id="template"></span>
+                        </div>
+                    </div>
+                    {% else %}
+                    None...
+                    {% endif %}
+              </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+<script>
+var deleteButton = function(){
+    var hoge = document.getElementsByName("tv_add");
+    var fuga = document.getElementsByName("tv_remove");
+    for (var i = 0; i < 3; i++){
+        hoge[i].value = "";
+        fuga[i].value = "";
+    };
+};
+
+
+{% for num in range(10) %}
+var deleteButton{{num}} = function(){
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + document.getElementById("sim-{{num}}").innerText + "</br>";
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "【大枠】"
+    {% if sim_high_semantic %}
+        {% for i in sim_high_semantic[num] %}
+            + "{{i}}　"
+        {% endfor %}
+    {% endif %}
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "</br>";
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "【詳細】"
+    {% if sim_low_semantic %}
+        {% for i in sim_low_semantic[num] %}
+            + "{{i}}　"
+        {% endfor %}
+    {% endif %}
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "<hr>";
+};
+{% endfor %}
+
+
+{% for num in range(10) %}
+var deleteButtonForDis{{num}} = function(){
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + document.getElementById("dis-{{num}}").innerText + "</br>";
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "【大枠】"
+    {% if dis_high_semantic %}
+        {% for i in dis_high_semantic[num] %}
+            + "{{i}}　"
+        {% endfor %}
+    {% endif %}
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "</br>";
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "【詳細】"
+    {% if dis_low_semantic %}
+        {% for i in dis_low_semantic[num] %}
+            + "{{i}}　"
+        {% endfor %}
+    {% endif %}
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "<hr>";
+};
+{% endfor %}
+
+</script>
+
+{% endblock %}
