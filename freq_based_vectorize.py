@@ -87,14 +87,16 @@ if __name__ == "__main__":
         return map(lambda x: x[0], sorted(li,key=lambda l:l[1], reverse=True)[:10])
 
     json_data = {}
-    for i in range(504):
+    documents_num = 504
+    for i in range(documents_num):
         json_data[str(i)] = calculate_rank(i)
 
     with open("tfidf.json", "w") as f:
         json.dump(json_data, f, indent=4, sort_keys=True, separators=(',', ': '))
 
+
+    # Create a vec with TF-IDF
     """
-    # with TF-IDF
     separated_document_list = documents_wakati(sys.argv[1])
 
     X, feature_list = by_counter_dictvectorizer(separated_document_list)
@@ -106,8 +108,8 @@ if __name__ == "__main__":
     np.save("tfidf_features", feature_list)
     """
 
+    # Create a vec with BM25
     """
-    # with TF-IDF
     separated_document_list = documents_wakati(sys.argv[1])
 
     # Document-Term Matrix
