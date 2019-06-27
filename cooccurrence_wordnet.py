@@ -120,9 +120,13 @@ def create_df(dic):
 
     return word_association
 
-def word_rank(doc_num):
-    model = np.load("./models/tfidf_model.npy")
-    features = np.load("./models/tfidf_features.npy")
+def word_rank(doc_num, f_type):
+    if f_type == 0:
+        model = np.load("./models/tfidf_model.npy")
+        features = np.load("./models/tfidf_features.npy")
+    elif f_type == 1:
+        model = np.load("./models/saved_model.npy")
+        features = np.load("./models/saved_features.npy")
 
     dic = {}
     for f, s in zip(features, model[doc_num]):
@@ -176,8 +180,9 @@ if __name__ == "__main__":
 
     line_list, N = create_doc_dict(doc_num)
 
-    # TF-IDF
-    tfidf_dict = word_rank(doc_num)
+    # Feature value
+    f_type = 0  # 0: TF-IDF, 1: BM25
+    feature_dict = word_rank(doc_num, f_type)
 
     # Calculate P(X, Y)
     p_xy_dict = cal_p_xy(line_list)
@@ -190,4 +195,4 @@ if __name__ == "__main__":
     word_association = create_df(p_xy_dict)
     #word_association.to_csv("./models/word_associaation.csv", encoding="utf8")
     edge_threshold = 1  # For pruning. If TF: 1<, else: N<
-    plot_network(data=word_association, edge_threshold=edge_threshold)
+    plot_network(data=word_association, edge_threshold=edge_threshold, w_score_dict=feature_dict)
