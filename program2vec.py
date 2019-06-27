@@ -15,6 +15,7 @@ def program2vec(separated_document_list):
 
         # vector_size: A dimension num of a compression vector
         m = Doc2Vec(documents = train_data, dm = 1, vector_size=300, window=8, min_count=10, workers=4)
+        # Memory cannot have data, so use the generator (refer: https://trap.jp/post/295/).
         m.save("./doc2vec.model")
 
     return m
