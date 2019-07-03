@@ -38,7 +38,11 @@ def plot_network(data, edge_threshold=0., fig_size=(8, 8), file_name=None, dir_p
     # nodeの大きさ
     if w_score_dict != None:
         for w, s in pr.items():
-            pr[w] = w_score_dict[w]
+            try: 
+                pr[w] = w_score_dict[w]
+            except Exception as e:
+                print(e)
+                print(w)
     size_weight = 5000
     nx.draw_networkx_nodes(G, pos, node_color=list(pr.values()),
                            cmap=plt.cm.Reds,
@@ -122,11 +126,11 @@ def create_df(dic):
 
 def word_rank(doc_num, f_type):
     if f_type == 0:
-        model = np.load("./models/tfidf_model.npy")
-        features = np.load("./models/tfidf_features.npy")
+        model = np.load("/Users/ruffy/Desktop/ts2text/RandD/models/tfidf_model.npy")
+        features = np.load("/Users/ruffy/Desktop/ts2text/RandD/models/tfidf_features.npy")
     elif f_type == 1:
-        model = np.load("./models/saved_model.npy")
-        features = np.load("./models/saved_features.npy")
+        model = np.load("/Users/ruffy/Desktop/ts2text/RandD/models/saved_model.npy")
+        features = np.load("/Users/ruffy/Desktop/ts2text/RandD/models/saved_features.npy")
 
     dic = {}
     for f, s in zip(features, model[doc_num]):
