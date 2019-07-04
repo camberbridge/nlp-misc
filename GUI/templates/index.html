@@ -198,7 +198,9 @@
                     <div class="scrollbar">
                         <div class="force-overflow" style="max-width:700px;">
                             {% for i in range(high_semantic|length) %}
-                                {{message_1dim[i]}} </br>
+                                <button class="mdl-button mdl-js-button" style="color:#04bd35; font-weight:bold;" onclick="drawGraph({{i}}, '{{message_1dim[i]}}')">
+                                    {{message_1dim[i]}}
+                                </button> </br>
                                 <span>【大枠】</span>
                                 {% for j in high_semantic[i] %}
                                     <span>{{j}}　</span>
@@ -234,10 +236,104 @@ var deleteButton = function(){
     };
 };
 
+{% if filenumber_list %}
+var filenumber_list = {{filenumber_list}}
+{% endif %}
+var drawGraph = function(i, name){
+    var xhr = new XMLHttpRequest();
+
+    {% if filenumber_list %}
+    xhr.open("GET", "/plot/" + filenumber_list[i]);
+    {% else %}
+    xhr.open("GET", "/plot/" + i);
+    {% endif %}
+
+    xhr.send();
+
+    // If specified, responseType must be empty string or "text"
+    xhr.responseType = 'text';
+    xhr.onload = function () {
+        if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+                nwin = window.open("", "共起ネットワーク","width=800,height=800");
+                nwin.document.open();
+                nwin.document.write("<HTML><HEAD>");
+                nwin.document.write("<TITLE>" + name + "</TITLE>");
+                nwin.document.writeln("<BODY>");
+                nwin.document.write(xhr.responseText);
+                nwin.document.write("</BODY></HTML>");
+                nwin.document.close();
+            }
+        }
+    };
+}
+var drawGraph1 = function(i, name){
+    var xhr = new XMLHttpRequest();
+
+    {% if sim_num_list %}
+    xhr.open("GET", "/plot/" + {{sim_num_list}}[i]);
+    {% elif add_result_num_list %}
+    xhr.open("GET", "/plot/" + {{add_result_num_list}}[i]);
+    {% elif add_sub_result_num_list %}
+    xhr.open("GET", "/plot/" + {{add_sub_result_num_list}}[i]);
+    {% else %}
+    xhr.open("GET", "/plot/" + i);
+    {% endif %}
+
+    xhr.send();
+
+    // If specified, responseType must be empty string or "text"
+    xhr.responseType = 'text';
+    xhr.onload = function () {
+        if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+                nwin = window.open("", "共起ネットワーク","width=800,height=800");
+                nwin.document.open();
+                nwin.document.write("<HTML><HEAD>");
+                nwin.document.write("<TITLE>" + name + "</TITLE>");
+                nwin.document.writeln("<BODY>");
+                nwin.document.write(xhr.responseText);
+                nwin.document.write("</BODY></HTML>");
+                nwin.document.close();
+            }
+        }
+    };
+}
+var drawGraph2 = function(i, name){
+    var xhr = new XMLHttpRequest();
+
+    {% if dis_num_list %}
+    xhr.open("GET", "/plot/" + {{dis_num_list}}[i]);
+    {% else %}
+    xhr.open("GET", "/plot/" + i);
+    {% endif %}
+
+    xhr.send();
+
+    // If specified, responseType must be empty string or "text"
+    xhr.responseType = 'text';
+    xhr.onload = function () {
+        if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+                nwin = window.open("", "共起ネットワーク","width=800,height=800");
+                nwin.document.open();
+                nwin.document.write("<HTML><HEAD>");
+                nwin.document.write("<TITLE>" + name + "</TITLE>");
+                nwin.document.writeln("<BODY>");
+                nwin.document.write(xhr.responseText);
+                nwin.document.write("</BODY></HTML>");
+                nwin.document.close();
+            }
+        }
+    };
+}
+
 
 {% for num in range(10) %}
 var deleteButton{{num}} = function(){
-    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + document.getElementById("sim-{{num}}").innerText + "</br>";
+    var name = document.getElementById("sim-{{num}}").innerText;
+
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "<button class='mdl-button mdl-js-button' style='color:#04bd35; font-weight:bold;' onclick='drawGraph1({{num}}, " + '"' + name + '"' + ")'>" + name + "</button>" + "</br>";
     document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "【大枠】"
     {% if sim_high_semantic %}
         {% for i in sim_high_semantic[num] %}
@@ -258,7 +354,9 @@ var deleteButton{{num}} = function(){
 
 {% for num in range(10) %}
 var deleteButtonForDis{{num}} = function(){
-    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + document.getElementById("dis-{{num}}").innerText + "</br>";
+    var name = document.getElementById("dis-{{num}}").innerText
+
+    document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "<button class='mdl-button mdl-js-button' style='color:#04bd35; font-weight:bold;' onclick='drawGraph2({{num}}, " + '"' + name + '"' + ")'>" + name + "</button>" + "</br>";
     document.getElementById("template").innerHTML = document.getElementById("template").innerHTML + "【大枠】"
     {% if dis_high_semantic %}
         {% for i in dis_high_semantic[num] %}

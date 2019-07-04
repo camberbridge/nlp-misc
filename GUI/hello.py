@@ -8,6 +8,15 @@ import commands
 import json
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '../RandD'))
+import cooccurrence_wordnet as cw
+import networkx as nx
+import matplotlib.pyplot as plt
+import io
+import base64
+
 app = Flask(__name__)
 
 
@@ -19,7 +28,6 @@ with open("/Users/ruffy/Desktop/ts2text/RandD/files.txt", "r") as f:
     tvlist_dic = program_list
     tvlist_list = [tvlist_dic[str(i+1)][3].replace(" ","").replace(u"　","")+"("+tvlist_dic[str(i+1)][2]+u"放送)_"+str(i+1) for i in range(len(tvlist_dic))]
     result_list = tvlist_list
-
 
 def tv_elem(program_id):
     # 上位概念≒概略 (LDAが上位の理由は, トピック数が20の事前分布なので)
@@ -151,10 +159,12 @@ def index():
                 message_list.append(_message_list)
 
             _elem_list = []
+            filenumber_list = []
             for j in file_n_list:
                 for k in j:
                     file_n = [i for i in range(len(file_list)) if k in file_list[i]][0]
                     _elem_list.append(tv_elem(str(file_n)))
+                    filenumber_list.append(file_n)
 
             elem_high_list = [i[0] for i in _elem_list]
             elem_low_list = [i[1] for i in _elem_list]
@@ -179,7 +189,10 @@ def index():
                                 sim_high_semantic=[i[0] for i in sim_elem_list], 
                                 sim_low_semantic=[i[1] for i in sim_elem_list],
                                 dis_high_semantic=[i[0] for i in dis_elem_list], 
-                                dis_low_semantic=[i[1] for i in dis_elem_list])
+                                dis_low_semantic=[i[1] for i in dis_elem_list],
+                                filenumber_list=filenumber_list,
+                                sim_num_list=[i[0] for i in sim_list],
+                                dis_num_list=[i[0] for i in dis_list])
 
             # Addition.
             if len(file_n_list[0]) > 1 and len(file_n_list) == 1:
@@ -205,7 +218,9 @@ def index():
                                     message_1dim=[i for j in message_list for i in j], 
                                     posi_tv=posi_tv, nega_tv=nega_tv,
                                     sim_high_semantic=[i[0] for i in sim_elem_list],
-                                    sim_low_semantic=[i[1] for i in sim_elem_list])
+                                    sim_low_semantic=[i[1] for i in sim_elem_list],
+                                    filenumber_list=filenumber_list,
+                                    add_result_num_list=[i[0] for i in add_result])
 
                 return render_template("index.html", title=title, message=message_list,
                                 main_text=elem_low_list,
@@ -214,7 +229,9 @@ def index():
                                 message_1dim=[i for j in message_list for i in j], 
                                 posi_tv=posi_tv, nega_tv=nega_tv,
                                 sim_high_semantic=[i[0] for i in sim_elem_list],
-                                sim_low_semantic=[i[1] for i in sim_elem_list])
+                                sim_low_semantic=[i[1] for i in sim_elem_list],
+                                filenumber_list=filenumber_list,
+                                add_result_num_list=[i[0] for i in add_result])
 
             # Add/Sub.
             if len(file_n_list[0]) > 0 and len(file_n_list) == 2:
@@ -237,7 +254,9 @@ def index():
                                 message_1dim=[i for j in message_list for i in j], 
                                 posi_tv=posi_tv, nega_tv=nega_tv,
                                 sim_high_semantic=[i[0] for i in sim_elem_list],
-                                sim_low_semantic=[i[1] for i in sim_elem_list])
+                                sim_low_semantic=[i[1] for i in sim_elem_list],
+                                filenumber_list=filenumber_list,
+                                add_sub_result_num_list=[i[0] for i in add_sub_result])
 
             message = u""
             return render_template("index.html", message = message, title = title, tv_list = tvlist_list)
@@ -255,6 +274,79 @@ def index():
         message = u""
         return render_template("index.html", message = message, title = title, tv_list = tvlist_list)
 
+
+def plot_network(data, edge_threshold=0., fig_size=(8, 8), file_name=None, dir_path=None, w_score_dict=None):
+    nodes = list(set(data['node1'].tolist()+data['node2'].tolist()))
+    G = nx.Graph()
+
+    #  頂点の追加
+    G.add_nodes_from(nodes)
+    #  辺の追加
+    for i in range(len(data)):
+        row_data = data.iloc[i]
+        if row_data['value'] > edge_threshold:
+            G.add_edge(row_data['node1'], row_data['node2'], weight=row_data['value'])
+
+    # 孤立したnodeを削除
+    isolated = [n for n in G.nodes if len([i for i in nx.all_neighbors(G, n)]) == 0]
+    for n in isolated:
+        G.remove_node(n)
+
+    plt.figure(figsize=fig_size)
+    pos = nx.spring_layout(G, k=0.3)  # k = node間反発係数
+    pr = nx.pagerank(G)
+
+    # nodeの大きさ
+    if w_score_dict != None:
+        for w, s in pr.items():
+            try:
+                pr[w] = w_score_dict[w]
+            except Exception as e:
+                print(e)
+                print(w)
+    size_weight = 5000
+    nx.draw_networkx_nodes(G, pos, node_color=list(pr.values()),
+                           cmap=plt.cm.Reds,
+                           alpha=0.7,
+                           node_size=[v*size_weight for v in pr.values()])
+
+    # 日本語ラベル
+    nx.draw_networkx_labels(G, pos, fontsize=12, font_family='YuGothic', font_weight="bold")
+
+    # エッジの太さ調節
+    thickness_weight = 1
+    edge_width = [d["weight"] * thickness_weight for (u, v, d) in G.edges(data=True)]
+    nx.draw_networkx_edges(G, pos, alpha=0.4, edge_color="darkgrey", width=edge_width)
+    plt.axis('off')
+
+    # Dynamic plots to display
+    img = io.BytesIO()
+    plt.savefig(img, format="png")
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode()
+
+    #plt.show()
+
+    return '<img src="data:image/png;base64,{}">'.format(plot_url)
+
+@app.route("/plot/<doc_num>")
+def plot_graph(doc_num='0'):
+    line_list, N = cw.create_doc_dict(doc_num)
+
+    # Feature value:
+    f_type = 0  # 0: TF-IDF, 1: BM25
+    feature_dict = cw.word_rank(int(doc_num), f_type)
+
+    # Calculate P(X, Y)
+    p_xy_dict = cw.cal_p_xy(line_list)
+
+    # Plot net
+    word_association = cw.create_df(p_xy_dict)
+    edge_threshold = 1  # For pruning. If TF: 1<, else: N<
+    plot_img_path = plot_network(data=word_association, edge_threshold=edge_threshold, w_score_dict=feature_dict)
+
+    print("Plotted!!!!!")
+    return plot_img_path
 
 if __name__ == "__main__":
     print('Flask is activated!!!')
