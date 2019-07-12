@@ -87,13 +87,12 @@ if __name__ == "__main__":
         return map(lambda x: x[0], sorted(li,key=lambda l:l[1], reverse=True)[:10])
 
     json_data = {}
-    documents_num = 504
+    documents_num = 659
     for i in range(documents_num):
         json_data[str(i)] = calculate_rank(i)
 
     with open("tfidf.json", "w") as f:
         json.dump(json_data, f, indent=4, sort_keys=True, separators=(',', ': '))
-
 
     # Create a vec with TF-IDF
     """
