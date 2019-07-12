@@ -30,6 +30,14 @@ with open("/Users/ruffy/Desktop/ts2text/RandD/files.txt", "r") as f:
     result_list = tvlist_list
 
 def tv_elem(program_id):
+
+    def interpolation(l):
+        if len(l) != 10:
+            n = 10 - len(l)
+            for i in range(n):
+                l.append("None")
+        return l
+
     # 上位概念≒概略 (LDAが上位の理由は, トピック数が20の事前分布なので)
     with open("/Users/ruffy/Desktop/ts2text/RandD/models/lda20_2_30per.json", "r") as f:
         lda_result = json.load(f)
@@ -38,7 +46,19 @@ def tv_elem(program_id):
     with open("/Users/ruffy/Desktop/ts2text/RandD/models/hdplda_2_30per.json", "r") as f:
         hdp_result = json.load(f)
 
-    return lda_result[program_id], hdp_result[program_id]
+    if program_id in lda_result:
+        lda_result = lda_result[program_id]
+        lda_result = interpolation(lda_result)
+    else:
+        lda_result = ["None" for i in range(10)]
+
+    if program_id in hdp_result:
+        hdp_result = hdp_result[program_id]
+        hdp_result = interpolation(hdp_result)
+    else:
+        hdp_result = ["None" for i in range(10)]
+
+    return lda_result, hdp_result
 
 def program2vec():
     m = Doc2Vec.load("/Users/ruffy/Desktop/ts2text/RandD/doc2vec.model")
