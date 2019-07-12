@@ -75,6 +75,8 @@ def lda(input_file = sys.argv[1]):
     topics = [model[c] for c in corpus]
     json_data = {}
 
+    #with open("models/lda20_2_30per.json", "r") as f:
+    #    lda_result = json.load(f)
     with open("lda20_2_30per.json", "w") as f:
         for i in xrange(len(topics)):
             if len(topics[i]) == 0:
@@ -98,6 +100,9 @@ def lda(input_file = sys.argv[1]):
                     if w in separated_document_list[i]:
                         if counter == top_n:
                             break
+                        #if w not in lda_result[str(i)]:
+                        #    top_n_word.append(w)
+                        #    counter += 1
                         top_n_word.append(w)
                         counter += 1
 
